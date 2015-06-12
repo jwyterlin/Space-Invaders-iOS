@@ -13,6 +13,22 @@ class GameScene: SKScene {
     
     // Private GameScene Properties
     
+    // Define the possible types of invader enemies
+    enum InvaderType {
+        case A
+        case B
+        case C
+    }
+    
+    // Define the size of the invaders and that they’ll be laid out in a grid of rows and columns on the screen
+    let kInvaderSize = CGSize(width:24, height:16)
+    let kInvaderGridSpacing = CGSize(width:12, height:12)
+    let kInvaderRowCount = 6
+    let kInvaderColCount = 6
+    
+    // Define a name to identify invaders when searching for them in the scene.
+    let kInvaderName = "invader"
+    
     var contentCreated = false
     
     // Object Lifecycle Management
@@ -28,14 +44,37 @@ class GameScene: SKScene {
     
     func createContent() {
         
-        let invader = SKSpriteNode(imageNamed: "InvaderA_00.png")
+        //let invader = SKSpriteNode(imageNamed: "InvaderA_00.png")
         
-        invader.position = CGPoint(x: self.size.width/2, y: self.size.height/2)
+        //invader.position = CGPoint(x: self.size.width/2, y: self.size.height/2)
         
-        self.addChild(invader)
+        //self.addChild(invader)
         
         // black space color
         self.backgroundColor = SKColor.blackColor()
+    }
+    
+    func makeInvaderOfType(invaderType: InvaderType) -> (SKNode) {
+        
+        // Use the invaderType parameter to determine the color of the invader
+        var invaderColor: SKColor
+        
+        switch(invaderType) {
+        case .A:
+            invaderColor = SKColor.redColor()
+        case .B:
+            invaderColor = SKColor.greenColor()
+        case .C:
+            invaderColor = SKColor.blueColor()
+        default:
+            invaderColor = SKColor.blueColor()
+        }
+        
+        // Call the handy convenience initializer SKSpriteNode(color:size:) to allocate and initialize a sprite that renders as a rectangle of the given color invaderColor with size kInvaderSize.
+        let invader = SKSpriteNode(color: invaderColor, size: kInvaderSize)
+        invader.name = kInvaderName
+        
+        return invader
     }
     
     // Scene Update

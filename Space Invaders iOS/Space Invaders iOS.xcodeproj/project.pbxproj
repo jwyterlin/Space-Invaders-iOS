@@ -15,7 +15,25 @@
 		7B7F8A531B2A7EAB007FB87C /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = 7B7F8A511B2A7EAB007FB87C /* LaunchScreen.xib */; };
 		7B7F8A5F1B2A7EAB007FB87C /* Space_Invaders_iOSTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B7F8A5E1B2A7EAB007FB87C /* Space_Invaders_iOSTests.swift */; };
 		7B7F8A691B2A830D007FB87C /* GameOverScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B7F8A681B2A830D007FB87C /* GameOverScene.swift */; };
-		7B7F8A6B1B2A8363007FB87C /* Assets in Resources */ = {isa = PBXBuildFile; fileRef = 7B7F8A6A1B2A8363007FB87C /* Assets */; };
+		7B7F8AAC1B2A86C5007FB87C /* AssetLicensingNotes.txt in Resources */ = {isa = PBXBuildFile; fileRef = 7B7F8AAB1B2A86C5007FB87C /* AssetLicensingNotes.txt */; };
+		7B7F8ABB1B2A86E4007FB87C /* InvaderA_00.png in Resources */ = {isa = PBXBuildFile; fileRef = 7B7F8AAD1B2A86E4007FB87C /* InvaderA_00.png */; };
+		7B7F8ABC1B2A86E4007FB87C /* InvaderA_00@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 7B7F8AAE1B2A86E4007FB87C /* InvaderA_00@2x.png */; };
+		7B7F8ABD1B2A86E4007FB87C /* InvaderA_01.png in Resources */ = {isa = PBXBuildFile; fileRef = 7B7F8AAF1B2A86E4007FB87C /* InvaderA_01.png */; };
+		7B7F8ABE1B2A86E4007FB87C /* InvaderA_01@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 7B7F8AB01B2A86E4007FB87C /* InvaderA_01@2x.png */; };
+		7B7F8ABF1B2A86E4007FB87C /* InvaderB_00.png in Resources */ = {isa = PBXBuildFile; fileRef = 7B7F8AB11B2A86E4007FB87C /* InvaderB_00.png */; };
+		7B7F8AC01B2A86E4007FB87C /* InvaderB_00@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 7B7F8AB21B2A86E4007FB87C /* InvaderB_00@2x.png */; };
+		7B7F8AC11B2A86E4007FB87C /* InvaderB_01.png in Resources */ = {isa = PBXBuildFile; fileRef = 7B7F8AB31B2A86E4007FB87C /* InvaderB_01.png */; };
+		7B7F8AC21B2A86E4007FB87C /* InvaderB_01@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 7B7F8AB41B2A86E4007FB87C /* InvaderB_01@2x.png */; };
+		7B7F8AC31B2A86E4007FB87C /* InvaderC_00.png in Resources */ = {isa = PBXBuildFile; fileRef = 7B7F8AB51B2A86E4007FB87C /* InvaderC_00.png */; };
+		7B7F8AC41B2A86E4007FB87C /* InvaderC_00@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 7B7F8AB61B2A86E4007FB87C /* InvaderC_00@2x.png */; };
+		7B7F8AC51B2A86E4007FB87C /* InvaderC_01.png in Resources */ = {isa = PBXBuildFile; fileRef = 7B7F8AB71B2A86E4007FB87C /* InvaderC_01.png */; };
+		7B7F8AC61B2A86E4007FB87C /* InvaderC_01@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 7B7F8AB81B2A86E4007FB87C /* InvaderC_01@2x.png */; };
+		7B7F8AC71B2A86E4007FB87C /* Ship.png in Resources */ = {isa = PBXBuildFile; fileRef = 7B7F8AB91B2A86E4007FB87C /* Ship.png */; };
+		7B7F8AC81B2A86E4007FB87C /* Ship@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 7B7F8ABA1B2A86E4007FB87C /* Ship@2x.png */; };
+		7B7F8ACD1B2A86F4007FB87C /* InvaderBullet.wav in Resources */ = {isa = PBXBuildFile; fileRef = 7B7F8AC91B2A86F4007FB87C /* InvaderBullet.wav */; };
+		7B7F8ACE1B2A86F4007FB87C /* InvaderHit.wav in Resources */ = {isa = PBXBuildFile; fileRef = 7B7F8ACA1B2A86F4007FB87C /* InvaderHit.wav */; };
+		7B7F8ACF1B2A86F4007FB87C /* ShipBullet.wav in Resources */ = {isa = PBXBuildFile; fileRef = 7B7F8ACB1B2A86F4007FB87C /* ShipBullet.wav */; };
+		7B7F8AD01B2A86F4007FB87C /* ShipHit.wav in Resources */ = {isa = PBXBuildFile; fileRef = 7B7F8ACC1B2A86F4007FB87C /* ShipHit.wav */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -41,7 +59,25 @@
 		7B7F8A5D1B2A7EAB007FB87C /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		7B7F8A5E1B2A7EAB007FB87C /* Space_Invaders_iOSTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Space_Invaders_iOSTests.swift; sourceTree = "<group>"; };
 		7B7F8A681B2A830D007FB87C /* GameOverScene.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GameOverScene.swift; sourceTree = "<group>"; };
-		7B7F8A6A1B2A8363007FB87C /* Assets */ = {isa = PBXFileReference; lastKnownFileType = folder; path = Assets; sourceTree = "<group>"; };
+		7B7F8AAB1B2A86C5007FB87C /* AssetLicensingNotes.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = AssetLicensingNotes.txt; path = Assets/AssetLicensingNotes.txt; sourceTree = "<group>"; };
+		7B7F8AAD1B2A86E4007FB87C /* InvaderA_00.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = InvaderA_00.png; path = "Assets/Sprite Images/InvaderA_00.png"; sourceTree = "<group>"; };
+		7B7F8AAE1B2A86E4007FB87C /* InvaderA_00@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "InvaderA_00@2x.png"; path = "Assets/Sprite Images/InvaderA_00@2x.png"; sourceTree = "<group>"; };
+		7B7F8AAF1B2A86E4007FB87C /* InvaderA_01.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = InvaderA_01.png; path = "Assets/Sprite Images/InvaderA_01.png"; sourceTree = "<group>"; };
+		7B7F8AB01B2A86E4007FB87C /* InvaderA_01@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "InvaderA_01@2x.png"; path = "Assets/Sprite Images/InvaderA_01@2x.png"; sourceTree = "<group>"; };
+		7B7F8AB11B2A86E4007FB87C /* InvaderB_00.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = InvaderB_00.png; path = "Assets/Sprite Images/InvaderB_00.png"; sourceTree = "<group>"; };
+		7B7F8AB21B2A86E4007FB87C /* InvaderB_00@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "InvaderB_00@2x.png"; path = "Assets/Sprite Images/InvaderB_00@2x.png"; sourceTree = "<group>"; };
+		7B7F8AB31B2A86E4007FB87C /* InvaderB_01.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = InvaderB_01.png; path = "Assets/Sprite Images/InvaderB_01.png"; sourceTree = "<group>"; };
+		7B7F8AB41B2A86E4007FB87C /* InvaderB_01@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "InvaderB_01@2x.png"; path = "Assets/Sprite Images/InvaderB_01@2x.png"; sourceTree = "<group>"; };
+		7B7F8AB51B2A86E4007FB87C /* InvaderC_00.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = InvaderC_00.png; path = "Assets/Sprite Images/InvaderC_00.png"; sourceTree = "<group>"; };
+		7B7F8AB61B2A86E4007FB87C /* InvaderC_00@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "InvaderC_00@2x.png"; path = "Assets/Sprite Images/InvaderC_00@2x.png"; sourceTree = "<group>"; };
+		7B7F8AB71B2A86E4007FB87C /* InvaderC_01.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = InvaderC_01.png; path = "Assets/Sprite Images/InvaderC_01.png"; sourceTree = "<group>"; };
+		7B7F8AB81B2A86E4007FB87C /* InvaderC_01@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "InvaderC_01@2x.png"; path = "Assets/Sprite Images/InvaderC_01@2x.png"; sourceTree = "<group>"; };
+		7B7F8AB91B2A86E4007FB87C /* Ship.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = Ship.png; path = "Assets/Sprite Images/Ship.png"; sourceTree = "<group>"; };
+		7B7F8ABA1B2A86E4007FB87C /* Ship@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "Ship@2x.png"; path = "Assets/Sprite Images/Ship@2x.png"; sourceTree = "<group>"; };
+		7B7F8AC91B2A86F4007FB87C /* InvaderBullet.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; name = InvaderBullet.wav; path = "Assets/Sound Effects/InvaderBullet.wav"; sourceTree = "<group>"; };
+		7B7F8ACA1B2A86F4007FB87C /* InvaderHit.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; name = InvaderHit.wav; path = "Assets/Sound Effects/InvaderHit.wav"; sourceTree = "<group>"; };
+		7B7F8ACB1B2A86F4007FB87C /* ShipBullet.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; name = ShipBullet.wav; path = "Assets/Sound Effects/ShipBullet.wav"; sourceTree = "<group>"; };
+		7B7F8ACC1B2A86F4007FB87C /* ShipHit.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; name = ShipHit.wav; path = "Assets/Sound Effects/ShipHit.wav"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -83,7 +119,7 @@
 		7B7F8A411B2A7EAB007FB87C /* Space Invaders iOS */ = {
 			isa = PBXGroup;
 			children = (
-				7B7F8A6A1B2A8363007FB87C /* Assets */,
+				7B7F8A6C1B2A85A5007FB87C /* Assets */,
 				7B7F8A441B2A7EAB007FB87C /* AppDelegate.swift */,
 				7B7F8A481B2A7EAB007FB87C /* GameScene.swift */,
 				7B7F8A4A1B2A7EAB007FB87C /* GameViewController.swift */,
@@ -119,6 +155,48 @@
 				7B7F8A5D1B2A7EAB007FB87C /* Info.plist */,
 			);
 			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		7B7F8A6C1B2A85A5007FB87C /* Assets */ = {
+			isa = PBXGroup;
+			children = (
+				7B7F8AAB1B2A86C5007FB87C /* AssetLicensingNotes.txt */,
+				7B7F8A6E1B2A85BF007FB87C /* Sprite Images */,
+				7B7F8A6D1B2A85B1007FB87C /* Sound Effects */,
+			);
+			name = Assets;
+			sourceTree = "<group>";
+		};
+		7B7F8A6D1B2A85B1007FB87C /* Sound Effects */ = {
+			isa = PBXGroup;
+			children = (
+				7B7F8AC91B2A86F4007FB87C /* InvaderBullet.wav */,
+				7B7F8ACA1B2A86F4007FB87C /* InvaderHit.wav */,
+				7B7F8ACB1B2A86F4007FB87C /* ShipBullet.wav */,
+				7B7F8ACC1B2A86F4007FB87C /* ShipHit.wav */,
+			);
+			name = "Sound Effects";
+			sourceTree = "<group>";
+		};
+		7B7F8A6E1B2A85BF007FB87C /* Sprite Images */ = {
+			isa = PBXGroup;
+			children = (
+				7B7F8AAD1B2A86E4007FB87C /* InvaderA_00.png */,
+				7B7F8AAE1B2A86E4007FB87C /* InvaderA_00@2x.png */,
+				7B7F8AAF1B2A86E4007FB87C /* InvaderA_01.png */,
+				7B7F8AB01B2A86E4007FB87C /* InvaderA_01@2x.png */,
+				7B7F8AB11B2A86E4007FB87C /* InvaderB_00.png */,
+				7B7F8AB21B2A86E4007FB87C /* InvaderB_00@2x.png */,
+				7B7F8AB31B2A86E4007FB87C /* InvaderB_01.png */,
+				7B7F8AB41B2A86E4007FB87C /* InvaderB_01@2x.png */,
+				7B7F8AB51B2A86E4007FB87C /* InvaderC_00.png */,
+				7B7F8AB61B2A86E4007FB87C /* InvaderC_00@2x.png */,
+				7B7F8AB71B2A86E4007FB87C /* InvaderC_01.png */,
+				7B7F8AB81B2A86E4007FB87C /* InvaderC_01@2x.png */,
+				7B7F8AB91B2A86E4007FB87C /* Ship.png */,
+				7B7F8ABA1B2A86E4007FB87C /* Ship@2x.png */,
+			);
+			name = "Sprite Images";
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -201,10 +279,28 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				7B7F8ABF1B2A86E4007FB87C /* InvaderB_00.png in Resources */,
+				7B7F8ABC1B2A86E4007FB87C /* InvaderA_00@2x.png in Resources */,
+				7B7F8ABE1B2A86E4007FB87C /* InvaderA_01@2x.png in Resources */,
+				7B7F8ACD1B2A86F4007FB87C /* InvaderBullet.wav in Resources */,
 				7B7F8A531B2A7EAB007FB87C /* LaunchScreen.xib in Resources */,
-				7B7F8A6B1B2A8363007FB87C /* Assets in Resources */,
+				7B7F8AC51B2A86E4007FB87C /* InvaderC_01.png in Resources */,
+				7B7F8AC11B2A86E4007FB87C /* InvaderB_01.png in Resources */,
 				7B7F8A501B2A7EAB007FB87C /* Images.xcassets in Resources */,
+				7B7F8AC41B2A86E4007FB87C /* InvaderC_00@2x.png in Resources */,
+				7B7F8AC21B2A86E4007FB87C /* InvaderB_01@2x.png in Resources */,
+				7B7F8AC31B2A86E4007FB87C /* InvaderC_00.png in Resources */,
+				7B7F8ACF1B2A86F4007FB87C /* ShipBullet.wav in Resources */,
+				7B7F8AAC1B2A86C5007FB87C /* AssetLicensingNotes.txt in Resources */,
+				7B7F8ACE1B2A86F4007FB87C /* InvaderHit.wav in Resources */,
+				7B7F8AC61B2A86E4007FB87C /* InvaderC_01@2x.png in Resources */,
+				7B7F8ABD1B2A86E4007FB87C /* InvaderA_01.png in Resources */,
+				7B7F8AC01B2A86E4007FB87C /* InvaderB_00@2x.png in Resources */,
+				7B7F8AC81B2A86E4007FB87C /* Ship@2x.png in Resources */,
+				7B7F8AD01B2A86F4007FB87C /* ShipHit.wav in Resources */,
+				7B7F8AC71B2A86E4007FB87C /* Ship.png in Resources */,
 				7B7F8A4E1B2A7EAB007FB87C /* Main.storyboard in Resources */,
+				7B7F8ABB1B2A86E4007FB87C /* InvaderA_00.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
