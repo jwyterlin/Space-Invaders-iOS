@@ -7,39 +7,56 @@
 //
 
 import SpriteKit
+import CoreMotion
 
 class GameScene: SKScene {
-    override func didMoveToView(view: SKView) {
-        /* Setup your scene here */
-        let myLabel = SKLabelNode(fontNamed:"Chalkduster")
-        myLabel.text = "Hello, World!";
-        myLabel.fontSize = 65;
-        myLabel.position = CGPoint(x:CGRectGetMidX(self.frame), y:CGRectGetMidY(self.frame));
-        
-        self.addChild(myLabel)
-    }
     
-    override func touchesBegan(touches: Set<NSObject>, withEvent event: UIEvent) {
-        /* Called when a touch begins */
+    // Private GameScene Properties
+    
+    var contentCreated = false
+    
+    // Object Lifecycle Management
+    
+    // Scene Setup and Content Creation
+    override func didMoveToView(view: SKView) {
         
-        for touch in (touches as! Set<UITouch>) {
-            let location = touch.locationInNode(self)
-            
-            let sprite = SKSpriteNode(imageNamed:"Spaceship")
-            
-            sprite.xScale = 0.5
-            sprite.yScale = 0.5
-            sprite.position = location
-            
-            let action = SKAction.rotateByAngle(CGFloat(M_PI), duration:1)
-            
-            sprite.runAction(SKAction.repeatActionForever(action))
-            
-            self.addChild(sprite)
+        if (!self.contentCreated) {
+            self.createContent()
+            self.contentCreated = true
         }
     }
-   
+    
+    func createContent() {
+        
+        let invader = SKSpriteNode(imageNamed: "InvaderA_00.png")
+        
+        invader.position = CGPoint(x: self.size.width/2, y: self.size.height/2)
+        
+        self.addChild(invader)
+        
+        // black space color
+        self.backgroundColor = SKColor.blackColor()
+    }
+    
+    // Scene Update
+    
     override func update(currentTime: CFTimeInterval) {
         /* Called before each frame is rendered */
     }
+    
+    
+    // Scene Update Helpers
+    
+    // Invader Movement Helpers
+    
+    // Bullet Helpers
+    
+    // User Tap Helpers
+    
+    // HUD Helpers
+    
+    // Physics Contact Helpers
+    
+    // Game End Helpers
+    
 }

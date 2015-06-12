@@ -8,13 +8,14 @@
 
 /* Begin PBXBuildFile section */
 		7B7F8A451B2A7EAB007FB87C /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B7F8A441B2A7EAB007FB87C /* AppDelegate.swift */; };
-		7B7F8A471B2A7EAB007FB87C /* GameScene.sks in Resources */ = {isa = PBXBuildFile; fileRef = 7B7F8A461B2A7EAB007FB87C /* GameScene.sks */; };
 		7B7F8A491B2A7EAB007FB87C /* GameScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B7F8A481B2A7EAB007FB87C /* GameScene.swift */; };
 		7B7F8A4B1B2A7EAB007FB87C /* GameViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B7F8A4A1B2A7EAB007FB87C /* GameViewController.swift */; };
 		7B7F8A4E1B2A7EAB007FB87C /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 7B7F8A4C1B2A7EAB007FB87C /* Main.storyboard */; };
 		7B7F8A501B2A7EAB007FB87C /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 7B7F8A4F1B2A7EAB007FB87C /* Images.xcassets */; };
 		7B7F8A531B2A7EAB007FB87C /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = 7B7F8A511B2A7EAB007FB87C /* LaunchScreen.xib */; };
 		7B7F8A5F1B2A7EAB007FB87C /* Space_Invaders_iOSTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B7F8A5E1B2A7EAB007FB87C /* Space_Invaders_iOSTests.swift */; };
+		7B7F8A691B2A830D007FB87C /* GameOverScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B7F8A681B2A830D007FB87C /* GameOverScene.swift */; };
+		7B7F8A6B1B2A8363007FB87C /* Assets in Resources */ = {isa = PBXBuildFile; fileRef = 7B7F8A6A1B2A8363007FB87C /* Assets */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -31,7 +32,6 @@
 		7B7F8A3F1B2A7EAB007FB87C /* Space Invaders iOS.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Space Invaders iOS.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		7B7F8A431B2A7EAB007FB87C /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		7B7F8A441B2A7EAB007FB87C /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
-		7B7F8A461B2A7EAB007FB87C /* GameScene.sks */ = {isa = PBXFileReference; lastKnownFileType = file.sks; path = GameScene.sks; sourceTree = "<group>"; };
 		7B7F8A481B2A7EAB007FB87C /* GameScene.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameScene.swift; sourceTree = "<group>"; };
 		7B7F8A4A1B2A7EAB007FB87C /* GameViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameViewController.swift; sourceTree = "<group>"; };
 		7B7F8A4D1B2A7EAB007FB87C /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
@@ -40,6 +40,8 @@
 		7B7F8A581B2A7EAB007FB87C /* Space Invaders iOSTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "Space Invaders iOSTests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		7B7F8A5D1B2A7EAB007FB87C /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		7B7F8A5E1B2A7EAB007FB87C /* Space_Invaders_iOSTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Space_Invaders_iOSTests.swift; sourceTree = "<group>"; };
+		7B7F8A681B2A830D007FB87C /* GameOverScene.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GameOverScene.swift; sourceTree = "<group>"; };
+		7B7F8A6A1B2A8363007FB87C /* Assets */ = {isa = PBXFileReference; lastKnownFileType = folder; path = Assets; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -81,14 +83,15 @@
 		7B7F8A411B2A7EAB007FB87C /* Space Invaders iOS */ = {
 			isa = PBXGroup;
 			children = (
+				7B7F8A6A1B2A8363007FB87C /* Assets */,
 				7B7F8A441B2A7EAB007FB87C /* AppDelegate.swift */,
-				7B7F8A461B2A7EAB007FB87C /* GameScene.sks */,
 				7B7F8A481B2A7EAB007FB87C /* GameScene.swift */,
 				7B7F8A4A1B2A7EAB007FB87C /* GameViewController.swift */,
 				7B7F8A4C1B2A7EAB007FB87C /* Main.storyboard */,
 				7B7F8A4F1B2A7EAB007FB87C /* Images.xcassets */,
 				7B7F8A511B2A7EAB007FB87C /* LaunchScreen.xib */,
 				7B7F8A421B2A7EAB007FB87C /* Supporting Files */,
+				7B7F8A681B2A830D007FB87C /* GameOverScene.swift */,
 			);
 			path = "Space Invaders iOS";
 			sourceTree = "<group>";
@@ -199,8 +202,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				7B7F8A531B2A7EAB007FB87C /* LaunchScreen.xib in Resources */,
+				7B7F8A6B1B2A8363007FB87C /* Assets in Resources */,
 				7B7F8A501B2A7EAB007FB87C /* Images.xcassets in Resources */,
-				7B7F8A471B2A7EAB007FB87C /* GameScene.sks in Resources */,
 				7B7F8A4E1B2A7EAB007FB87C /* Main.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -221,6 +224,7 @@
 			files = (
 				7B7F8A491B2A7EAB007FB87C /* GameScene.swift in Sources */,
 				7B7F8A4B1B2A7EAB007FB87C /* GameViewController.swift in Sources */,
+				7B7F8A691B2A830D007FB87C /* GameOverScene.swift in Sources */,
 				7B7F8A451B2A7EAB007FB87C /* AppDelegate.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
