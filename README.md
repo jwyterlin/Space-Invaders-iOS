@@ -1,1 +1,1 @@
-# Space-Invaders-iOS
+# Space Invaders for iOS
