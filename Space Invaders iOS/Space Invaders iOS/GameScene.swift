@@ -45,6 +45,15 @@ class GameScene: SKScene {
     
     var contentCreated = false
     
+    // Invaders begin by moving to the right.
+    var invaderMovementDirection: InvaderMovementDirection = .Right
+
+    // Invaders haven’t moved yet, so set the time to zero.
+    var timeOfLastMove: CFTimeInterval = 0.0
+    
+    // Invaders take 1 second for each move. Each step left, right or down takes 1 second.
+    let timePerMove: CFTimeInterval = 1.0
+    
     // Object Lifecycle Management
     
     // Scene Setup and Content Creation
@@ -183,11 +192,42 @@ class GameScene: SKScene {
     // Scene Update
     
     override func update(currentTime: CFTimeInterval) {
+
         /* Called before each frame is rendered */
+        
+        moveInvadersForUpdate(currentTime)
+        
     }
     
-    
     // Scene Update Helpers
+    func moveInvadersForUpdate(currentTime: CFTimeInterval) {
+        
+        // If it’s not yet time to move, then exit the method.
+        if (currentTime - timeOfLastMove < timePerMove) {
+            return
+        }
+        
+        // Recall that your scene holds all of the invaders as child nodes
+        enumerateChildNodesWithName(kInvaderName, usingBlock: {
+            (node: SKNode!, stop: UnsafeMutablePointer<ObjCBool>) -> Void in
+            
+            switch self.invaderMovementDirection {
+            case .Right:
+                node.position = CGPoint(x: node.position.x + 10, y: node.position.y)
+            case .Left:
+                node.position = CGPoint(x: node.position.x - 10, y: node.position.y)
+            case .DownThenLeft, .DownThenRight:
+                node.position = CGPoint(x: node.position.x, y: node.position.y - 10)
+            case .None:
+                break
+            default:
+                break
+            }
+            
+            // Record that you just moved the invaders
+            self.timeOfLastMove = currentTime
+        })
+    }
     
     // Invader Movement Helpers
     
