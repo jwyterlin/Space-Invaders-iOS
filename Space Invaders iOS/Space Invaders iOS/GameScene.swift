@@ -32,6 +32,9 @@ class GameScene: SKScene {
     let kShipSize = CGSize(width:30, height:16)
     let kShipName = "ship"
     
+    let kScoreHudName = "scoreHud"
+    let kHealthHudName = "healthHud"
+    
     var contentCreated = false
     
     // Object Lifecycle Management
