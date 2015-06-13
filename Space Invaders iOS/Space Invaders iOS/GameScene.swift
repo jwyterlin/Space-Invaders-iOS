@@ -63,6 +63,8 @@ class GameScene: SKScene {
         
         setupShip()
         
+        setupHud()
+        
     }
     
     func makeInvaderOfType(invaderType: InvaderType) -> (SKNode) {
@@ -135,6 +137,39 @@ class GameScene: SKScene {
         let ship = SKSpriteNode(color: SKColor.greenColor(), size: kShipSize)
         ship.name = kShipName
         return ship
+    }
+    
+    func setupHud() {
+        
+        // Give the score label a name so you can find it later when you need to update the displayed score.
+        let scoreLabel = SKLabelNode(fontNamed: "Courier")
+        scoreLabel.name = kScoreHudName
+        scoreLabel.fontSize = 25
+        
+        // Color the score label green.
+        scoreLabel.fontColor = SKColor.greenColor()
+        scoreLabel.text = String(format: "Score: %04u", 0)
+        
+        // Position the score label.
+        println(size.height)
+        scoreLabel.position = CGPoint(x: frame.size.width / 2, y: size.height - (40 + scoreLabel.frame.size.height/2))
+        addChild(scoreLabel)
+        
+        // Give the health label a name so you can reference it later when you need to update the displayed health.
+        let healthLabel = SKLabelNode(fontNamed: "Courier")
+        healthLabel.name = kHealthHudName
+        healthLabel.fontSize = 25
+        
+        // Color the health label red; 
+        // the red and green indicators are common colors for these indicators in games, 
+        // and they’re easy to differentiate in the middle of furious gameplay.
+        healthLabel.fontColor = SKColor.redColor()
+        healthLabel.text = String(format: "Health: %.1f%%", 100.0)
+        
+        // Position the health below the score label.
+        healthLabel.position = CGPoint(x: frame.size.width / 2, y: size.height - (80 + healthLabel.frame.size.height/2))
+        addChild(healthLabel)
+        
     }
     
     // Scene Update
