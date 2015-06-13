@@ -207,6 +207,8 @@ class GameScene: SKScene {
             return
         }
         
+        determineInvaderMovementDirection()
+        
         // Recall that your scene holds all of the invaders as child nodes
         enumerateChildNodesWithName(kInvaderName) {
             node, stop in
@@ -230,6 +232,55 @@ class GameScene: SKScene {
     }
     
     // Invader Movement Helpers
+    func determineInvaderMovementDirection() {
+        
+        // Here you keep a reference to the current invaderMovementDirection so that you can modify just after below.
+        var proposedMovementDirection: InvaderMovementDirection = invaderMovementDirection
+        
+        // Loop over all the invaders in the scene and invoke the block with the invader as an argument
+        enumerateChildNodesWithName(kInvaderName) { node, stop in
+            switch self.invaderMovementDirection {
+            case .Right:
+                //   If the invader’s right edge is within 1 point of the right edge of the scene,
+                // it’s about to move offscreen. 
+                //   Set proposedMovementDirection so that the invaders move down then left.
+                //   You compare the invader’s frame (the frame that contains its content in the scene’s coordinate system)
+                // with the scene width. 
+                //   Since the scene has an anchorPoint of (0, 0) by default,
+                // and is scaled to fill its parent view, this comparison ensures you’re testing against the view’s edges.
+                if (CGRectGetMaxX(node.frame) >= node.scene!.size.width - 1.0) {
+                    proposedMovementDirection = .DownThenLeft
+                    stop.memory = true
+                }
+            case .Left:
+                // If the invader’s left edge is within 1 point of the left edge of the scene, it’s about to move offscreen. 
+                // Set proposedMovementDirection so that invaders move down then right.
+                if (CGRectGetMinX(node.frame) <= 1.0) {
+                    proposedMovementDirection = .DownThenRight
+                    stop.memory = true
+                }
+            case .DownThenLeft:
+                // If invaders are moving down then left, they’ve already moved down at this point, 
+                // so they should now move left. 
+                // How this works will become more obvious when you integrate determineInvaderMovementDirection with moveInvadersForUpdate().
+                proposedMovementDirection = .Left
+                stop.memory = true
+            case .DownThenRight:
+                // If the invaders are moving down then right, they’ve already moved down at this point, so they should now move right.
+                proposedMovementDirection = .Right
+                stop.memory = true
+            default:
+                break
+            }
+        }
+        
+        // If the proposed invader movement direction is different than the current invader movement direction, 
+        // update the current direction to the proposed direction.
+        if (proposedMovementDirection != invaderMovementDirection) {
+            invaderMovementDirection = proposedMovementDirection
+        }
+        
+    }
     
     // Bullet Helpers
     
