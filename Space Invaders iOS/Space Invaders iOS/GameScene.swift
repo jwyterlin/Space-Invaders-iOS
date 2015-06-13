@@ -29,6 +29,9 @@ class GameScene: SKScene {
     // Define a name to identify invaders when searching for them in the scene.
     let kInvaderName = "invader"
     
+    let kShipSize = CGSize(width:30, height:16)
+    let kShipName = "ship"
+    
     var contentCreated = false
     
     // Object Lifecycle Management
