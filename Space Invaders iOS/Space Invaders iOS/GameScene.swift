@@ -20,6 +20,14 @@ class GameScene: SKScene {
         case C
     }
     
+    enum InvaderMovementDirection {
+        case Right
+        case Left
+        case DownThenRight
+        case DownThenLeft
+        case None
+    }
+    
     // Define the size of the invaders and that they’ll be laid out in a grid of rows and columns on the screen
     let kInvaderSize = CGSize(width:24, height:16)
     let kInvaderGridSpacing = CGSize(width:12, height:12)
