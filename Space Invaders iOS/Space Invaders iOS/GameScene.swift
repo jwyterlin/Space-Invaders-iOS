@@ -208,8 +208,8 @@ class GameScene: SKScene {
         }
         
         // Recall that your scene holds all of the invaders as child nodes
-        enumerateChildNodesWithName(kInvaderName, usingBlock: {
-            (node: SKNode!, stop: UnsafeMutablePointer<ObjCBool>) -> Void in
+        enumerateChildNodesWithName(kInvaderName) {
+            node, stop in
             
             switch self.invaderMovementDirection {
             case .Right:
@@ -226,7 +226,7 @@ class GameScene: SKScene {
             
             // Record that you just moved the invaders
             self.timeOfLastMove = currentTime
-        })
+        }
     }
     
     // Invader Movement Helpers
