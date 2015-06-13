@@ -34,6 +34,7 @@
 		7B7F8ACE1B2A86F4007FB87C /* InvaderHit.wav in Resources */ = {isa = PBXBuildFile; fileRef = 7B7F8ACA1B2A86F4007FB87C /* InvaderHit.wav */; };
 		7B7F8ACF1B2A86F4007FB87C /* ShipBullet.wav in Resources */ = {isa = PBXBuildFile; fileRef = 7B7F8ACB1B2A86F4007FB87C /* ShipBullet.wav */; };
 		7B7F8AD01B2A86F4007FB87C /* ShipHit.wav in Resources */ = {isa = PBXBuildFile; fileRef = 7B7F8ACC1B2A86F4007FB87C /* ShipHit.wav */; };
+		7BABB6001B2CD0E500A5A1E3 /* CoreMotion.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7BABB5FF1B2CD0E500A5A1E3 /* CoreMotion.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -78,6 +79,7 @@
 		7B7F8ACA1B2A86F4007FB87C /* InvaderHit.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; name = InvaderHit.wav; path = "Assets/Sound Effects/InvaderHit.wav"; sourceTree = "<group>"; };
 		7B7F8ACB1B2A86F4007FB87C /* ShipBullet.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; name = ShipBullet.wav; path = "Assets/Sound Effects/ShipBullet.wav"; sourceTree = "<group>"; };
 		7B7F8ACC1B2A86F4007FB87C /* ShipHit.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; name = ShipHit.wav; path = "Assets/Sound Effects/ShipHit.wav"; sourceTree = "<group>"; };
+		7BABB5FF1B2CD0E500A5A1E3 /* CoreMotion.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreMotion.framework; path = System/Library/Frameworks/CoreMotion.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -85,6 +87,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				7BABB6001B2CD0E500A5A1E3 /* CoreMotion.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -119,15 +122,16 @@
 		7B7F8A411B2A7EAB007FB87C /* Space Invaders iOS */ = {
 			isa = PBXGroup;
 			children = (
-				7B7F8A6C1B2A85A5007FB87C /* Assets */,
 				7B7F8A441B2A7EAB007FB87C /* AppDelegate.swift */,
+				7B7F8A6C1B2A85A5007FB87C /* Assets */,
+				7BABB6011B2CD0EB00A5A1E3 /* Frameworks */,
+				7B7F8A681B2A830D007FB87C /* GameOverScene.swift */,
 				7B7F8A481B2A7EAB007FB87C /* GameScene.swift */,
 				7B7F8A4A1B2A7EAB007FB87C /* GameViewController.swift */,
-				7B7F8A4C1B2A7EAB007FB87C /* Main.storyboard */,
 				7B7F8A4F1B2A7EAB007FB87C /* Images.xcassets */,
 				7B7F8A511B2A7EAB007FB87C /* LaunchScreen.xib */,
+				7B7F8A4C1B2A7EAB007FB87C /* Main.storyboard */,
 				7B7F8A421B2A7EAB007FB87C /* Supporting Files */,
-				7B7F8A681B2A830D007FB87C /* GameOverScene.swift */,
 			);
 			path = "Space Invaders iOS";
 			sourceTree = "<group>";
@@ -197,6 +201,14 @@
 				7B7F8ABA1B2A86E4007FB87C /* Ship@2x.png */,
 			);
 			name = "Sprite Images";
+			sourceTree = "<group>";
+		};
+		7BABB6011B2CD0EB00A5A1E3 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				7BABB5FF1B2CD0E500A5A1E3 /* CoreMotion.framework */,
+			);
+			name = Frameworks;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -517,6 +529,7 @@
 				7B7F8A641B2A7EAB007FB87C /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		7B7F8A651B2A7EAB007FB87C /* Build configuration list for PBXNativeTarget "Space Invaders iOSTests" */ = {
 			isa = XCConfigurationList;
@@ -525,6 +538,7 @@
 				7B7F8A671B2A7EAB007FB87C /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};

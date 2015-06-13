@@ -12,6 +12,7 @@ import CoreMotion
 class GameScene: SKScene {
     
     // Private GameScene Properties
+    let motionManager: CMMotionManager = CMMotionManager()
     
     // Define the possible types of invader enemies
     enum InvaderType {
@@ -62,6 +63,7 @@ class GameScene: SKScene {
         if (!self.contentCreated) {
             self.createContent()
             self.contentCreated = true
+            motionManager.startAccelerometerUpdates()
         }
     }
     
@@ -75,6 +77,8 @@ class GameScene: SKScene {
         
         // black space color
         self.backgroundColor = SKColor.blackColor()
+        
+        physicsBody = SKPhysicsBody(edgeLoopFromRect: frame)
         
         setupInvaders()
         
@@ -151,9 +155,24 @@ class GameScene: SKScene {
     }
     
     func makeShip() -> SKNode {
+        
         let ship = SKSpriteNode(color: SKColor.greenColor(), size: kShipSize)
         ship.name = kShipName
+        
+        // Create a rectangular physics body the same size as the ship.
+        ship.physicsBody = SKPhysicsBody(rectangleOfSize: ship.frame.size)
+        
+        // Make the shape dynamic; this makes it subject to things such as collisions and other outside forces.
+        ship.physicsBody!.dynamic = true
+        
+        // You don't want the ship to drop off the bottom of the screen, so you indicate that it's not affected by gravity.
+        ship.physicsBody!.affectedByGravity = false
+        
+        // Give the ship an arbitrary mass so that its movement feels natural.
+        ship.physicsBody!.mass = 0.02
+        
         return ship
+        
     }
     
     func setupHud() {
@@ -195,6 +214,8 @@ class GameScene: SKScene {
 
         /* Called before each frame is rendered */
         
+        processUserMotionForUpdate(currentTime)
+        
         moveInvadersForUpdate(currentTime)
         
     }
@@ -228,6 +249,33 @@ class GameScene: SKScene {
             
             // Record that you just moved the invaders
             self.timeOfLastMove = currentTime
+        }
+    }
+    
+    func processUserMotionForUpdate(currentTime: CFTimeInterval) {
+        
+        // Get the ship from the scene so you can move it.
+        let ship = childNodeWithName(kShipName) as! SKSpriteNode
+        
+        // Get the accelerometer data from the motion manager. 
+        // It is an Optional, that is a variable that can hold either a value or no value. 
+        // The if let data statement allows to check if there is a value in accelerometerData, 
+        // if is the case assign it to the constant data in order to use it safely within the if’s scope.
+        if let data = motionManager.accelerometerData {
+            
+            // If your device is oriented with the screen facing up and the home button at the bottom, 
+            // then tilting the device to the right produces data.acceleration.x > 0, 
+            // whereas tilting it to the left produces data.acceleration.x < 0. 
+            // The check against 0.2 means that the device will be considered perfectly flat/no 
+            // thrust (technically data.acceleration.x == 0) as long as it's close enough to zero 
+            // (data.acceleration.x in the range [-0.2, 0.2]). 
+            // There's nothing special about 0.2, it just seemed to work well for me. 
+            // Little tricks like this will make your control system more reliable and less frustrating for users.
+            if (fabs(data.acceleration.x) > 0.2) {
+                
+                ship.physicsBody!.applyForce(CGVectorMake(40.0 * CGFloat(data.acceleration.x), 0))
+                
+            }
         }
     }
     
