@@ -52,6 +52,9 @@ class GameScene: SKScene {
         
         // black space color
         self.backgroundColor = SKColor.blackColor()
+        
+        setupInvaders()
+        
     }
     
     func makeInvaderOfType(invaderType: InvaderType) -> (SKNode) {
@@ -75,6 +78,40 @@ class GameScene: SKScene {
         invader.name = kInvaderName
         
         return invader
+    }
+    
+    func setupInvaders() {
+        
+        // Declare and set the baseOrigin constant and loop over the rows.
+        let baseOrigin = CGPoint(x:size.width / 3, y:180)
+        for var row = 1; row <= kInvaderRowCount; row++ {
+            
+            // Choose a single InvaderType for all invaders in this row based on the row number.
+            var invaderType: InvaderType
+            if row % 3 == 0 {
+                invaderType = .A
+            } else if row % 3 == 1 {
+                invaderType = .B
+            } else {
+                invaderType = .C
+            }
+            
+            // Do some math to figure out where the first invader in this row should be positioned.
+            let invaderPositionY = CGFloat(row) * (kInvaderSize.height * 2) + baseOrigin.y
+            var invaderPosition = CGPoint(x:baseOrigin.x, y:invaderPositionY)
+            
+            // Loop over the columns.
+            for var col = 1; col <= kInvaderColCount; col++ {
+                
+                // Create an invader for the current row and column and add it to the scene.
+                var invader = makeInvaderOfType(invaderType)
+                invader.position = invaderPosition
+                addChild(invader)
+                
+                // Update the invaderPosition so that it’s correct for the next invader.
+                invaderPosition = CGPoint(x: invaderPosition.x + kInvaderSize.width + kInvaderGridSpacing.width, y: invaderPositionY)
+            }
+        }
     }
     
     // Scene Update
