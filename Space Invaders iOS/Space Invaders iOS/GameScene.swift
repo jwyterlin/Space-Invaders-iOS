@@ -58,6 +58,8 @@ class GameScene: SKScene {
         
         setupInvaders()
         
+        setupShip()
+        
     }
     
     func makeInvaderOfType(invaderType: InvaderType) -> (SKNode) {
@@ -115,6 +117,21 @@ class GameScene: SKScene {
                 invaderPosition = CGPoint(x: invaderPosition.x + kInvaderSize.width + kInvaderGridSpacing.width, y: invaderPositionY)
             }
         }
+    }
+    
+    func setupShip() {
+        // Create a ship
+        let ship = makeShip()
+        
+        // Place the ship on the screen
+        ship.position = CGPoint(x:size.width / 2.0, y:kShipSize.height / 2.0)
+        addChild(ship)
+    }
+    
+    func makeShip() -> SKNode {
+        let ship = SKSpriteNode(color: SKColor.greenColor(), size: kShipSize)
+        ship.name = kShipName
+        return ship
     }
     
     // Scene Update
