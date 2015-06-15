@@ -12,6 +12,8 @@ import CoreMotion
 class GameScene: SKScene {
     
     // Private GameScene Properties
+    var tapQueue: Array<Int> = []
+    
     let motionManager: CMMotionManager = CMMotionManager()
     
     // Define the possible types of invader enemies
