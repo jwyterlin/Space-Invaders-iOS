@@ -252,6 +252,8 @@ class GameScene: SKScene {
         
         moveInvadersForUpdate(currentTime)
         
+        fireInvaderBulletsForUpdate(currentTime)
+        
     }
     
     // Scene Update Helpers
@@ -326,6 +328,45 @@ class GameScene: SKScene {
             // Remove the tap from the queue.
             self.tapQueue.removeAtIndex(0)
             
+        }
+        
+    }
+    
+    func fireInvaderBulletsForUpdate(currentTime: CFTimeInterval) {
+        
+        let existingBullet = self.childNodeWithName(kInvaderFiredBulletName)
+        
+        // Only fire a bullet if one’s not already on-screen.
+        if existingBullet == nil {
+            
+            var allInvaders = Array<SKNode>()
+            
+            // Collect all the invaders currently on-screen.
+            self.enumerateChildNodesWithName(kInvaderName) {
+                node, stop in
+                
+                allInvaders.append(node)
+            }
+            
+            if allInvaders.count > 0 {
+                
+                // Select an invader at random.
+                let allInvadersIndex = Int( arc4random_uniform( UInt32( allInvaders.count ) ) )
+                
+                let invader = allInvaders[allInvadersIndex]
+                
+                // Create a bullet and fire it from just below the selected invader.
+                let bullet = self.makeBulletOfType(.InvaderFired)
+                bullet.position = CGPoint(x: invader.position.x, y: invader.position.y - invader.frame.size.height / 2 + bullet.frame.size.height / 2)
+                
+                // The bullet should travel straight down and move just off the bottom of the screen.
+                let bulletDestination = CGPoint(x: invader.position.x, y: -(bullet.frame.size.height / 2))
+                
+                // Fire off the invader’s bullet.
+                self.fireBullet(bullet, toDestination: bulletDestination, withDuration: 2.0, andSoundFileName: "InvaderBullet.wav")
+        
+            }
+        
         }
         
     }
