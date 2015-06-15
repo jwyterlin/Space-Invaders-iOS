@@ -16,6 +16,15 @@ class GameScene: SKScene {
     
     let motionManager: CMMotionManager = CMMotionManager()
     
+    enum BulletType {
+        case ShipFired
+        case InvaderFired
+    }
+    
+    let kShipFiredBulletName = "shipFiredBullet"
+    let kInvaderFiredBulletName = "invaderFiredBullet"
+    let kBulletSize = CGSize(width:4, height: 8)
+    
     // Define the possible types of invader enemies
     enum InvaderType {
         case A
@@ -66,6 +75,7 @@ class GameScene: SKScene {
             self.createContent()
             self.contentCreated = true
             motionManager.startAccelerometerUpdates()
+            userInteractionEnabled = true
         }
     }
     
@@ -210,11 +220,33 @@ class GameScene: SKScene {
         
     }
     
+    func makeBulletOfType(bulletType: BulletType) -> SKNode! {
+        
+        var bullet: SKNode!
+        
+        switch bulletType {
+        case .ShipFired:
+            bullet = SKSpriteNode(color: SKColor.greenColor(), size: kBulletSize)
+            bullet.name = kShipFiredBulletName
+        case .InvaderFired:
+            bullet = SKSpriteNode(color: SKColor.magentaColor(), size: kBulletSize)
+            bullet.name = kInvaderFiredBulletName
+            break;
+        default:
+            bullet = nil
+        }
+        
+        return bullet
+        
+    }
+    
     // Scene Update
     
     override func update(currentTime: CFTimeInterval) {
 
         /* Called before each frame is rendered */
+        
+        processUserTapsForUpdate(currentTime)
         
         processUserMotionForUpdate(currentTime)
         
@@ -281,6 +313,23 @@ class GameScene: SKScene {
         }
     }
     
+    func processUserTapsForUpdate(currentTime: CFTimeInterval) {
+        
+        // Loop over tapQueue.
+        for tapCount in self.tapQueue {
+            
+            if tapCount == 1 {
+                // If the queue entry is a single-tap, handle it.
+                self.fireShipBullets()
+            }
+            
+            // Remove the tap from the queue.
+            self.tapQueue.removeAtIndex(0)
+            
+        }
+        
+    }
+    
     // Invader Movement Helpers
     func determineInvaderMovementDirection() {
         
@@ -333,8 +382,69 @@ class GameScene: SKScene {
     }
     
     // Bullet Helpers
+    func fireBullet(bullet: SKNode, toDestination destination:CGPoint, withDuration duration:CFTimeInterval, andSoundFileName soundName: String) {
+        
+        // Create an SKAction that moves the bullet to the desired destination and then removes it from the scene.
+        let bulletAction = SKAction.sequence([SKAction.moveTo(destination, duration: duration), SKAction.waitForDuration(3.0/60.0), SKAction.removeFromParent()])
+        
+        // Play the desired sound to signal that the bullet was fired.
+        let soundAction = SKAction.playSoundFileNamed(soundName, waitForCompletion: true)
+        
+        // Move the bullet and play the sound at the same time by putting them in the same group. A group runs its actions in parallel, not sequentially.
+        bullet.runAction(SKAction.group([bulletAction, soundAction]))
+        
+        // Fire the bullet by adding it to the scene.
+        self.addChild(bullet)
+    }
+    
+    func fireShipBullets() {
+        
+        let existingBullet = self.childNodeWithName(kShipFiredBulletName)
+        
+        // Only fire a bullet if there isn’t one currently on-screen.
+        if existingBullet == nil {
+            
+            if let ship = self.childNodeWithName(kShipName) {
+                
+                if let bullet = self.makeBulletOfType(.ShipFired) {
+                    
+                    // Set the bullet’s position so that it comes out of the top of the ship.
+                    bullet.position = CGPoint(x: ship.position.x, y: ship.position.y + ship.frame.size.height - bullet.frame.size.height / 2)
+                    
+                    // Set the bullet’s destination to be just off the top of the screen.
+                    let bulletDestination = CGPoint(x: ship.position.x, y: self.frame.size.height + bullet.frame.size.height / 2)
+                    
+                    // Fire the bullet!
+                    self.fireBullet(bullet, toDestination: bulletDestination, withDuration: 1.0, andSoundFileName: "ShipBullet.wav")
+                    
+                }
+            }
+        }
+    }
     
     // User Tap Helpers
+    override func touchesBegan(touches: Set<NSObject>, withEvent event: UIEvent) {
+        // Intentional no-op
+    }
+    
+    override func touchesMoved(touches: Set<NSObject>, withEvent event: UIEvent)  {
+        // Intentional no-op
+    }
+    
+    override func touchesCancelled(touches: Set<NSObject>, withEvent event: UIEvent) {
+        // Intentional no-op
+    }
+    
+    override func touchesEnded(touches: Set<NSObject>, withEvent event: UIEvent)  {
+        
+        if let touch = touches.first as? UITouch {
+            
+            if (touch.tapCount == 1) {
+                
+                self.tapQueue.append(1)
+            }
+        }
+    }
     
     // HUD Helpers
     
