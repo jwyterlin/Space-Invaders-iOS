@@ -12,6 +12,12 @@ import CoreMotion
 class GameScene: SKScene {
     
     // Private GameScene Properties
+    let kInvaderCategory: UInt32 = 0x1 << 0
+    let kShipFiredBulletCategory: UInt32 = 0x1 << 1
+    let kShipCategory: UInt32 = 0x1 << 2
+    let kSceneEdgeCategory: UInt32 = 0x1 << 3
+    let kInvaderFiredBulletCategory: UInt32 = 0x1 << 4
+    
     var tapQueue: Array<Int> = []
     
     let motionManager: CMMotionManager = CMMotionManager()
@@ -91,6 +97,7 @@ class GameScene: SKScene {
         self.backgroundColor = SKColor.blackColor()
         
         physicsBody = SKPhysicsBody(edgeLoopFromRect: frame)
+        physicsBody!.categoryBitMask = kSceneEdgeCategory
         
         setupInvaders()
         
@@ -119,6 +126,12 @@ class GameScene: SKScene {
         // Call the handy convenience initializer SKSpriteNode(color:size:) to allocate and initialize a sprite that renders as a rectangle of the given color invaderColor with size kInvaderSize.
         let invader = SKSpriteNode(color: invaderColor, size: kInvaderSize)
         invader.name = kInvaderName
+        
+        invader.physicsBody = SKPhysicsBody(rectangleOfSize: invader.frame.size)
+        invader.physicsBody!.dynamic = false
+        invader.physicsBody!.categoryBitMask = kInvaderCategory
+        invader.physicsBody!.contactTestBitMask = 0x0
+        invader.physicsBody!.collisionBitMask = 0x0
         
         return invader
     }
@@ -183,6 +196,13 @@ class GameScene: SKScene {
         // Give the ship an arbitrary mass so that its movement feels natural.
         ship.physicsBody!.mass = 0.02
         
+        // Set the ship's category.
+        ship.physicsBody!.categoryBitMask = kShipCategory
+        // Don't detect contact between the ship and other physics bodies.
+        ship.physicsBody!.contactTestBitMask = 0x0
+        // Do detect collisions between the ship and the scene's outer edges.
+        ship.physicsBody!.collisionBitMask = kSceneEdgeCategory
+        
         return ship
         
     }
@@ -226,11 +246,29 @@ class GameScene: SKScene {
         
         switch bulletType {
         case .ShipFired:
+            
             bullet = SKSpriteNode(color: SKColor.greenColor(), size: kBulletSize)
             bullet.name = kShipFiredBulletName
+            
+            bullet.physicsBody = SKPhysicsBody(rectangleOfSize: bullet.frame.size)
+            bullet.physicsBody!.dynamic = true
+            bullet.physicsBody!.affectedByGravity = false
+            bullet.physicsBody!.categoryBitMask = kShipFiredBulletCategory
+            bullet.physicsBody!.contactTestBitMask = kInvaderCategory
+            bullet.physicsBody!.collisionBitMask = 0x0
+            
         case .InvaderFired:
+            
             bullet = SKSpriteNode(color: SKColor.magentaColor(), size: kBulletSize)
             bullet.name = kInvaderFiredBulletName
+            
+            bullet.physicsBody = SKPhysicsBody(rectangleOfSize: bullet.frame.size)
+            bullet.physicsBody!.dynamic = true
+            bullet.physicsBody!.affectedByGravity = false
+            bullet.physicsBody!.categoryBitMask = kInvaderFiredBulletCategory
+            bullet.physicsBody!.contactTestBitMask = kShipCategory
+            bullet.physicsBody!.collisionBitMask = 0x0
+            
             break;
         default:
             bullet = nil
