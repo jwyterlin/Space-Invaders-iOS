@@ -12,6 +12,9 @@ import CoreMotion
 class GameScene: SKScene, SKPhysicsContactDelegate {
     
     // Private GameScene Properties
+    
+    let kMinInvaderBottomHeight: Float = 32.0
+    var gameEnding: Bool = false
 
     var score: Int = 0
     var shipHealth: Float = 1.0
@@ -301,6 +304,10 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     override func update(currentTime: CFTimeInterval) {
 
         /* Called before each frame is rendered */
+        
+        if self.isGameOver() {
+            self.endGame()
+        }
         
         processContactsForUpdate(currentTime)
         
@@ -655,5 +662,57 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     }
     
     // Game End Helpers
+    func isGameOver() -> Bool {
+        
+        // Get all invaders that remain in the scene.
+        let invader = self.childNodeWithName(kInvaderName)
+        
+        // Iterate through the invaders to check if any invaders are too low.
+        var invaderTooLow = false
+        
+        self.enumerateChildNodesWithName(kInvaderName) {
+            node, stop in
+            
+            if (Float(CGRectGetMinY(node.frame)) <= self.kMinInvaderBottomHeight)   {
+                
+                invaderTooLow = true
+                stop.memory = true
+            }
+        }
+        
+        // Get a pointer to your ship: if the ship’s health drops to zero, 
+        // then the player is considered dead and the player ship will be removed from the scene. 
+        // In this case, you’d get a nil value indicating that there is no player ship.
+        let ship = self.childNodeWithName(kShipName)
+        
+        // Return whether your game is over or not. 
+        // If there are no more invaders, or an invader is too low, 
+        // or your ship is destroyed, then the game is over.
+        return invader == nil || invaderTooLow || ship == nil
+        
+    }
+    
+    func endGame() {
+        
+        // End your game only once. 
+        // Otherwise, you’ll try to display the game over scene multiple times and this would be a definite bug.
+        if !self.gameEnding {
+            
+            self.gameEnding = true
+            
+            // Stop accelerometer updates.
+            self.motionManager.stopAccelerometerUpdates()
+            
+            // Show the GameOverScene. 
+            // You can inspect GameOverScene.swift for the details, 
+            // but it’s a basic scene with a simple “Game Over” message. 
+            // The scene will start another game if you tap on it.
+            let gameOverScene: GameOverScene = GameOverScene(size: self.size)
+            
+            view!.presentScene(gameOverScene, transition: SKTransition.doorsOpenHorizontalWithDuration(1.0))
+            
+        }
+        
+    }
     
 }
