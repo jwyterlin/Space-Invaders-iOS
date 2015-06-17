@@ -79,7 +79,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     var timeOfLastMove: CFTimeInterval = 0.0
     
     // Invaders take 1 second for each move. Each step left, right or down takes 1 second.
-    let timePerMove: CFTimeInterval = 1.0
+    var timePerMove: CFTimeInterval = 1.0
     
     // Object Lifecycle Management
     
@@ -473,6 +473,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
                 // and is scaled to fill its parent view, this comparison ensures you’re testing against the view’s edges.
                 if (CGRectGetMaxX(node.frame) >= node.scene!.size.width - 1.0) {
                     proposedMovementDirection = .DownThenLeft
+                    self.adjustInvaderMovementToTimePerMove(self.timePerMove * 0.8)
                     stop.memory = true
                 }
             case .Left:
@@ -480,6 +481,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
                 // Set proposedMovementDirection so that invaders move down then right.
                 if (CGRectGetMinX(node.frame) <= 1.0) {
                     proposedMovementDirection = .DownThenRight
+                    self.adjustInvaderMovementToTimePerMove(self.timePerMove * 0.8)
                     stop.memory = true
                 }
             case .DownThenLeft:
@@ -501,6 +503,34 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         // update the current direction to the proposed direction.
         if (proposedMovementDirection != invaderMovementDirection) {
             invaderMovementDirection = proposedMovementDirection
+        }
+        
+    }
+    
+    func adjustInvaderMovementToTimePerMove(newTimerPerMove: CFTimeInterval) {
+        
+        // Ignore bogus values — a value less than or equal to zero would mean infinitely fast or reverse movement, 
+        // which doesn’t make sense.
+        if newTimerPerMove <= 0 {
+            return
+        }
+        
+        // Set the scene’s timePerMove to the given value. 
+        // This will speed up the movement of invaders within moveInvadersForUpdate. 
+        // Record the ratio of the change so you can adjust the node’s speed accordingly.
+        let ratio: CGFloat = CGFloat(self.timePerMove / newTimerPerMove)
+        self.timePerMove = newTimerPerMove
+        
+        self.enumerateChildNodesWithName(kInvaderName) {
+            node, stop in
+            
+            // Speed up the animation of invaders so that the animation cycles through its two frames more quickly. 
+            // The ratio ensures that if the new time per move is 1/3 the old time per move, 
+            // the new animation speed is 3 times the old animation speed. 
+            // Setting the node’s speed ensures that all of the node’s actions run more quickly, 
+            // including the action that animates between sprite frames.
+            node.speed = node.speed * ratio
+            
         }
         
     }
