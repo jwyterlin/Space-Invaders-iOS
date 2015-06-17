@@ -114,25 +114,36 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         
     }
     
-    func makeInvaderOfType(invaderType: InvaderType) -> (SKNode) {
+    func loadInvaderTexturesOfType(invaderType: InvaderType) -> Array<SKTexture> {
         
-        // Use the invaderType parameter to determine the color of the invader
-        var invaderColor: SKColor
+        var prefix: String
         
         switch(invaderType) {
         case .A:
-            invaderColor = SKColor.redColor()
+            prefix = "InvaderA"
         case .B:
-            invaderColor = SKColor.greenColor()
+            prefix = "InvaderB"
         case .C:
-            invaderColor = SKColor.blueColor()
+            prefix = "InvaderC"
         default:
-            invaderColor = SKColor.blueColor()
+            prefix = "InvaderC"
         }
         
-        // Call the handy convenience initializer SKSpriteNode(color:size:) to allocate and initialize a sprite that renders as a rectangle of the given color invaderColor with size kInvaderSize.
-        let invader = SKSpriteNode(color: invaderColor, size: kInvaderSize)
+        // Loads a pair of sprite images — InvaderA_00.png and InvaderA_01.png — for each invader type and creates SKTexture objects from them.
+        return [SKTexture(imageNamed: String(format: "%@_00.png", prefix)), SKTexture(imageNamed: String(format: "%@_01.png", prefix))]
+        
+    }
+    
+    func makeInvaderOfType(invaderType: InvaderType) -> (SKNode) {
+        
+        let invaderTextures = self.loadInvaderTexturesOfType(invaderType)
+        
+        // Uses the first such texture as the sprite’s base image.
+        let invader = SKSpriteNode(texture: invaderTextures[0])
         invader.name = kInvaderName
+        
+        // Animates these two images in a continuous animation loop.
+        invader.runAction( SKAction.repeatActionForever( SKAction.animateWithTextures( invaderTextures, timePerFrame: self.timePerMove ) ) )
         
         invader.physicsBody = SKPhysicsBody(rectangleOfSize: invader.frame.size)
         invader.physicsBody!.dynamic = false
@@ -188,7 +199,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     
     func makeShip() -> SKNode {
         
-        let ship = SKSpriteNode(color: SKColor.greenColor(), size: kShipSize)
+        let ship = SKSpriteNode(imageNamed: "Ship.png")
         ship.name = kShipName
         
         // Create a rectangular physics body the same size as the ship.
