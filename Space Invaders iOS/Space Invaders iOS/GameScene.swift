@@ -9,9 +9,12 @@
 import SpriteKit
 import CoreMotion
 
-class GameScene: SKScene {
+class GameScene: SKScene, SKPhysicsContactDelegate {
     
     // Private GameScene Properties
+    
+    var contactQueue = Array<SKPhysicsContact>()
+    
     let kInvaderCategory: UInt32 = 0x1 << 0
     let kShipFiredBulletCategory: UInt32 = 0x1 << 1
     let kShipCategory: UInt32 = 0x1 << 2
@@ -82,6 +85,7 @@ class GameScene: SKScene {
             self.contentCreated = true
             motionManager.startAccelerometerUpdates()
             userInteractionEnabled = true
+            physicsWorld.contactDelegate = self
         }
     }
     
@@ -284,6 +288,8 @@ class GameScene: SKScene {
 
         /* Called before each frame is rendered */
         
+        processContactsForUpdate(currentTime)
+        
         processUserTapsForUpdate(currentTime)
         
         processUserMotionForUpdate(currentTime)
@@ -329,28 +335,33 @@ class GameScene: SKScene {
     func processUserMotionForUpdate(currentTime: CFTimeInterval) {
         
         // Get the ship from the scene so you can move it.
-        let ship = childNodeWithName(kShipName) as! SKSpriteNode
-        
-        // Get the accelerometer data from the motion manager. 
-        // It is an Optional, that is a variable that can hold either a value or no value. 
-        // The if let data statement allows to check if there is a value in accelerometerData, 
-        // if is the case assign it to the constant data in order to use it safely within the if’s scope.
-        if let data = motionManager.accelerometerData {
+
+        if let ship = self.childNodeWithName(kShipName) as! SKSpriteNode! {
             
-            // If your device is oriented with the screen facing up and the home button at the bottom, 
-            // then tilting the device to the right produces data.acceleration.x > 0, 
-            // whereas tilting it to the left produces data.acceleration.x < 0. 
-            // The check against 0.2 means that the device will be considered perfectly flat/no 
-            // thrust (technically data.acceleration.x == 0) as long as it's close enough to zero 
-            // (data.acceleration.x in the range [-0.2, 0.2]). 
-            // There's nothing special about 0.2, it just seemed to work well for me. 
-            // Little tricks like this will make your control system more reliable and less frustrating for users.
-            if (fabs(data.acceleration.x) > 0.2) {
+            // Get the accelerometer data from the motion manager.
+            // It is an Optional, that is a variable that can hold either a value or no value.
+            // The if let data statement allows to check if there is a value in accelerometerData,
+            // if is the case assign it to the constant data in order to use it safely within the if’s scope.
+            if let data = motionManager.accelerometerData {
                 
-                ship.physicsBody!.applyForce(CGVectorMake(40.0 * CGFloat(data.acceleration.x), 0))
-                
+                // If your device is oriented with the screen facing up and the home button at the bottom,
+                // then tilting the device to the right produces data.acceleration.x > 0,
+                // whereas tilting it to the left produces data.acceleration.x < 0.
+                // The check against 0.2 means that the device will be considered perfectly flat/no
+                // thrust (technically data.acceleration.x == 0) as long as it's close enough to zero
+                // (data.acceleration.x in the range [-0.2, 0.2]).
+                // There's nothing special about 0.2, it just seemed to work well for me.
+                // Little tricks like this will make your control system more reliable and less frustrating for users.
+                if (fabs(data.acceleration.x) > 0.2) {
+                    
+                    ship.physicsBody!.applyForce(CGVectorMake(40.0 * CGFloat(data.acceleration.x), 0))
+                    
+                }
+
             }
+
         }
+
     }
     
     func processUserTapsForUpdate(currentTime: CFTimeInterval) {
@@ -405,6 +416,20 @@ class GameScene: SKScene {
         
             }
         
+        }
+        
+    }
+    
+    func processContactsForUpdate(currentTime: CFTimeInterval) {
+        
+        for contact in self.contactQueue {
+        
+            self.handleContact(contact)
+            
+            if let index = (self.contactQueue as NSArray).indexOfObject(contact) as Int? {
+                self.contactQueue.removeAtIndex(index)
+            }
+            
         }
         
     }
@@ -528,6 +553,45 @@ class GameScene: SKScene {
     // HUD Helpers
     
     // Physics Contact Helpers
+    func didBeginContact(contact: SKPhysicsContact!) {
+        if contact as SKPhysicsContact? != nil {
+            self.contactQueue.append(contact)
+        }
+    }
+    
+    func handleContact(contact: SKPhysicsContact) {
+        
+        // Don't allow the same contact twice.
+        // Ensure you haven't already handled this contact and removed its nodes
+        if (contact.bodyA.node?.parent == nil || contact.bodyB.node?.parent == nil) {
+            return
+        }
+        
+        var nodeNames = [contact.bodyA.node!.name!, contact.bodyB.node!.name!]
+        
+        // containsObject is not yet implemented in Swift's Array and 
+        // you should cast the Array to NSArray like so (instanceOfSwiftArray as NSArray)
+        // in order to get access to NSArray's methods.
+        if (nodeNames as NSArray).containsObject(kShipName) && (nodeNames as NSArray).containsObject(kInvaderFiredBulletName) {
+            
+            // If an invader bullet hits your ship, remove your ship and the bullet from the scene and play a sound.
+            // Invader bullet hit a ship
+            self.runAction(SKAction.playSoundFileNamed("ShipHit.wav", waitForCompletion: false))
+            
+            contact.bodyA.node!.removeFromParent()
+            contact.bodyB.node!.removeFromParent()
+            
+        } else if ((nodeNames as NSArray).containsObject(kInvaderName) && (nodeNames as NSArray).containsObject(kShipFiredBulletName)) {
+            
+            // If a ship bullet hits an invader, 
+            // remove the invader and the bullet from the scene and play a different sound.
+            // Ship bullet hit an invader
+            self.runAction(SKAction.playSoundFileNamed("InvaderHit.wav", waitForCompletion: false))
+            contact.bodyA.node!.removeFromParent()
+            contact.bodyB.node!.removeFromParent()
+            
+        }
+    }
     
     // Game End Helpers
     
