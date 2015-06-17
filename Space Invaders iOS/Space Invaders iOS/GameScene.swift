@@ -12,6 +12,9 @@ import CoreMotion
 class GameScene: SKScene, SKPhysicsContactDelegate {
     
     // Private GameScene Properties
+
+    var score: Int = 0
+    var shipHealth: Float = 1.0
     
     var contactQueue = Array<SKPhysicsContact>()
     
@@ -236,7 +239,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         // the red and green indicators are common colors for these indicators in games, 
         // and they’re easy to differentiate in the middle of furious gameplay.
         healthLabel.fontColor = SKColor.redColor()
-        healthLabel.text = String(format: "Health: %.1f%%", 100.0)
+        healthLabel.text = String(format: "Health: %.1f%%", self.shipHealth * 100.0)
         
         // Position the health below the score label.
         healthLabel.position = CGPoint(x: frame.size.width / 2, y: size.height - (80 + healthLabel.frame.size.height/2))
@@ -335,7 +338,6 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     func processUserMotionForUpdate(currentTime: CFTimeInterval) {
         
         // Get the ship from the scene so you can move it.
-
         if let ship = self.childNodeWithName(kShipName) as! SKSpriteNode! {
             
             // Get the accelerometer data from the motion manager.
@@ -551,6 +553,25 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     }
     
     // HUD Helpers
+    func adjustScoreBy(points: Int) {
+        
+        self.score += points
+        
+        let score = self.childNodeWithName(kScoreHudName) as! SKLabelNode
+        
+        score.text = String(format: "Score: %04u", self.score)
+    }
+    
+    func adjustShipHealthBy(healthAdjustment: Float) {
+        
+        // ensures that the ship’s health doesn’t go negative.
+        self.shipHealth = max(self.shipHealth + healthAdjustment, 0)
+        
+        let health = self.childNodeWithName(kHealthHudName) as! SKLabelNode
+        
+        health.text = String(format: "Health: %.1f%%", self.shipHealth * 100)
+        
+    }
     
     // Physics Contact Helpers
     func didBeginContact(contact: SKPhysicsContact!) {
@@ -578,8 +599,34 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             // Invader bullet hit a ship
             self.runAction(SKAction.playSoundFileNamed("ShipHit.wav", waitForCompletion: false))
             
-            contact.bodyA.node!.removeFromParent()
-            contact.bodyB.node!.removeFromParent()
+            // Adjust the ship’s health when it gets hit by an invader’s bullet.
+            self.adjustShipHealthBy(-0.334)
+            
+            if self.shipHealth <= 0.0 {
+                
+                // If the ship’s health is zero, remove the ship and the invader’s bullet from the scene.
+                contact.bodyA.node!.removeFromParent()
+                contact.bodyB.node!.removeFromParent()
+                
+            } else {
+                
+                // If the ship’s health is greater than zero, 
+                // only remove the invader’s bullet from the scene. 
+                // Dim the ship’s sprite slightly to indicate damage.
+                let ship = self.childNodeWithName(kShipName)!
+                
+                ship.alpha = CGFloat(self.shipHealth)
+                
+                if contact.bodyA.node == ship {
+                    
+                    contact.bodyB.node!.removeFromParent()
+                    
+                } else {
+                    
+                    contact.bodyA.node!.removeFromParent()
+                }
+                
+            }
             
         } else if ((nodeNames as NSArray).containsObject(kInvaderName) && (nodeNames as NSArray).containsObject(kShipFiredBulletName)) {
             
@@ -589,6 +636,9 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             self.runAction(SKAction.playSoundFileNamed("InvaderHit.wav", waitForCompletion: false))
             contact.bodyA.node!.removeFromParent()
             contact.bodyB.node!.removeFromParent()
+            
+            // When an invader is hit, add 100 points to the score.
+            self.adjustScoreBy(100)
             
         }
     }
