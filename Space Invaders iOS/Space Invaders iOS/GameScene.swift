@@ -12,6 +12,11 @@ import CoreMotion
 class GameScene: SKScene {
     
     // Private GameScene Properties
+    enum BulletType {
+        case ShipFired
+        case InvaderFired
+    }
+    
     var tapQueue: Array<Int> = []
     
     let motionManager: CMMotionManager = CMMotionManager()
@@ -66,6 +71,7 @@ class GameScene: SKScene {
             self.createContent()
             self.contentCreated = true
             motionManager.startAccelerometerUpdates()
+            userInteractionEnabled = true
         }
     }
     
@@ -137,7 +143,7 @@ class GameScene: SKScene {
             for var col = 1; col <= kInvaderColCount; col++ {
                 
                 // Create an invader for the current row and column and add it to the scene.
-                var invader = makeInvaderOfType(invaderType)
+                let invader = makeInvaderOfType(invaderType)
                 invader.position = invaderPosition
                 addChild(invader)
                 
@@ -189,7 +195,7 @@ class GameScene: SKScene {
         scoreLabel.text = String(format: "Score: %04u", 0)
         
         // Position the score label.
-        println(size.height)
+        print(size.height)
         scoreLabel.position = CGPoint(x: frame.size.width / 2, y: size.height - (40 + scoreLabel.frame.size.height/2))
         addChild(scoreLabel)
         
@@ -335,6 +341,28 @@ class GameScene: SKScene {
     // Bullet Helpers
     
     // User Tap Helpers
+    override func touchesBegan(touches: Set<UITouch>, withEvent event: UIEvent?) {
+        // Intentional no-op
+    }
+    
+    override func touchesMoved(touches: Set<UITouch>, withEvent event: UIEvent?)  {
+        // Intentional no-op
+    }
+    
+    override func touchesCancelled(touches: Set<UITouch>?, withEvent event: UIEvent?) {
+        // Intentional no-op
+    }
+    
+    override func touchesEnded(touches: Set<UITouch>, withEvent event: UIEvent?)  {
+        
+        if let touch = touches.first as? UITouch {
+            
+            if (touch.tapCount == 1) {
+                
+                self.tapQueue.append(1)
+            }
+        }
+    }
     
     // HUD Helpers
     
