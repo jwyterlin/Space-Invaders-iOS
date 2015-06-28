@@ -9,17 +9,36 @@
 import SpriteKit
 import CoreMotion
 
-class GameScene: SKScene {
+class GameScene: SKScene, SKPhysicsContactDelegate {
     
     // Private GameScene Properties
+
+    let kMinInvaderBottomHeight: Float = 32.0
+    var gameEnding: Bool = false
+
+    var score: Int = 0
+    var shipHealth: Float = 1.0
+    
+    var contactQueue = Array<SKPhysicsContact>()
+    
+    let kInvaderCategory: UInt32 = 0x1 << 0
+    let kShipFiredBulletCategory: UInt32 = 0x1 << 1
+    let kShipCategory: UInt32 = 0x1 << 2
+    let kSceneEdgeCategory: UInt32 = 0x1 << 3
+    let kInvaderFiredBulletCategory: UInt32 = 0x1 << 4
+    
+    var tapQueue: Array<Int> = []
+    
+    let motionManager: CMMotionManager = CMMotionManager()
+    
     enum BulletType {
         case ShipFired
         case InvaderFired
     }
     
-    var tapQueue: Array<Int> = []
-    
-    let motionManager: CMMotionManager = CMMotionManager()
+    let kShipFiredBulletName = "shipFiredBullet"
+    let kInvaderFiredBulletName = "invaderFiredBullet"
+    let kBulletSize = CGSize(width:4, height: 8)
     
     // Define the possible types of invader enemies
     enum InvaderType {
@@ -60,7 +79,7 @@ class GameScene: SKScene {
     var timeOfLastMove: CFTimeInterval = 0.0
     
     // Invaders take 1 second for each move. Each step left, right or down takes 1 second.
-    let timePerMove: CFTimeInterval = 1.0
+    var timePerMove: CFTimeInterval = 1.0
     
     // Object Lifecycle Management
     
@@ -72,6 +91,7 @@ class GameScene: SKScene {
             self.contentCreated = true
             motionManager.startAccelerometerUpdates()
             userInteractionEnabled = true
+            physicsWorld.contactDelegate = self
         }
     }
     
@@ -87,6 +107,7 @@ class GameScene: SKScene {
         self.backgroundColor = SKColor.blackColor()
         
         physicsBody = SKPhysicsBody(edgeLoopFromRect: frame)
+        physicsBody!.categoryBitMask = kSceneEdgeCategory
         
         setupInvaders()
         
@@ -96,25 +117,42 @@ class GameScene: SKScene {
         
     }
     
-    func makeInvaderOfType(invaderType: InvaderType) -> (SKNode) {
+    func loadInvaderTexturesOfType(invaderType: InvaderType) -> Array<SKTexture> {
         
-        // Use the invaderType parameter to determine the color of the invader
-        var invaderColor: SKColor
+        var prefix: String
         
         switch(invaderType) {
         case .A:
-            invaderColor = SKColor.redColor()
+            prefix = "InvaderA"
         case .B:
-            invaderColor = SKColor.greenColor()
+            prefix = "InvaderB"
         case .C:
-            invaderColor = SKColor.blueColor()
+            prefix = "InvaderC"
         default:
-            invaderColor = SKColor.blueColor()
+            prefix = "InvaderC"
         }
         
-        // Call the handy convenience initializer SKSpriteNode(color:size:) to allocate and initialize a sprite that renders as a rectangle of the given color invaderColor with size kInvaderSize.
-        let invader = SKSpriteNode(color: invaderColor, size: kInvaderSize)
+        // Loads a pair of sprite images — InvaderA_00.png and InvaderA_01.png — for each invader type and creates SKTexture objects from them.
+        return [SKTexture(imageNamed: String(format: "%@_00.png", prefix)), SKTexture(imageNamed: String(format: "%@_01.png", prefix))]
+        
+    }
+    
+    func makeInvaderOfType(invaderType: InvaderType) -> (SKNode) {
+        
+        let invaderTextures = self.loadInvaderTexturesOfType(invaderType)
+        
+        // Uses the first such texture as the sprite’s base image.
+        let invader = SKSpriteNode(texture: invaderTextures[0])
         invader.name = kInvaderName
+        
+        // Animates these two images in a continuous animation loop.
+        invader.runAction( SKAction.repeatActionForever( SKAction.animateWithTextures( invaderTextures, timePerFrame: self.timePerMove ) ) )
+        
+        invader.physicsBody = SKPhysicsBody(rectangleOfSize: invader.frame.size)
+        invader.physicsBody!.dynamic = false
+        invader.physicsBody!.categoryBitMask = kInvaderCategory
+        invader.physicsBody!.contactTestBitMask = 0x0
+        invader.physicsBody!.collisionBitMask = 0x0
         
         return invader
     }
@@ -164,7 +202,7 @@ class GameScene: SKScene {
     
     func makeShip() -> SKNode {
         
-        let ship = SKSpriteNode(color: SKColor.greenColor(), size: kShipSize)
+        let ship = SKSpriteNode(imageNamed: "Ship.png")
         ship.name = kShipName
         
         // Create a rectangular physics body the same size as the ship.
@@ -178,6 +216,13 @@ class GameScene: SKScene {
         
         // Give the ship an arbitrary mass so that its movement feels natural.
         ship.physicsBody!.mass = 0.02
+        
+        // Set the ship's category.
+        ship.physicsBody!.categoryBitMask = kShipCategory
+        // Don't detect contact between the ship and other physics bodies.
+        ship.physicsBody!.contactTestBitMask = 0x0
+        // Do detect collisions between the ship and the scene's outer edges.
+        ship.physicsBody!.collisionBitMask = kSceneEdgeCategory
         
         return ship
         
@@ -195,7 +240,7 @@ class GameScene: SKScene {
         scoreLabel.text = String(format: "Score: %04u", 0)
         
         // Position the score label.
-        print(size.height)
+        print(size.height, appendNewline: false)
         scoreLabel.position = CGPoint(x: frame.size.width / 2, y: size.height - (40 + scoreLabel.frame.size.height/2))
         addChild(scoreLabel)
         
@@ -208,11 +253,49 @@ class GameScene: SKScene {
         // the red and green indicators are common colors for these indicators in games, 
         // and they’re easy to differentiate in the middle of furious gameplay.
         healthLabel.fontColor = SKColor.redColor()
-        healthLabel.text = String(format: "Health: %.1f%%", 100.0)
+        healthLabel.text = String(format: "Health: %.1f%%", self.shipHealth * 100.0)
         
         // Position the health below the score label.
         healthLabel.position = CGPoint(x: frame.size.width / 2, y: size.height - (80 + healthLabel.frame.size.height/2))
         addChild(healthLabel)
+        
+    }
+    
+    func makeBulletOfType(bulletType: BulletType) -> SKNode! {
+        
+        var bullet: SKNode!
+        
+        switch bulletType {
+        case .ShipFired:
+            
+            bullet = SKSpriteNode(color: SKColor.greenColor(), size: kBulletSize)
+            bullet.name = kShipFiredBulletName
+            
+            bullet.physicsBody = SKPhysicsBody(rectangleOfSize: bullet.frame.size)
+            bullet.physicsBody!.dynamic = true
+            bullet.physicsBody!.affectedByGravity = false
+            bullet.physicsBody!.categoryBitMask = kShipFiredBulletCategory
+            bullet.physicsBody!.contactTestBitMask = kInvaderCategory
+            bullet.physicsBody!.collisionBitMask = 0x0
+            
+        case .InvaderFired:
+            
+            bullet = SKSpriteNode(color: SKColor.magentaColor(), size: kBulletSize)
+            bullet.name = kInvaderFiredBulletName
+            
+            bullet.physicsBody = SKPhysicsBody(rectangleOfSize: bullet.frame.size)
+            bullet.physicsBody!.dynamic = true
+            bullet.physicsBody!.affectedByGravity = false
+            bullet.physicsBody!.categoryBitMask = kInvaderFiredBulletCategory
+            bullet.physicsBody!.contactTestBitMask = kShipCategory
+            bullet.physicsBody!.collisionBitMask = 0x0
+            
+            break;
+        default:
+            bullet = nil
+        }
+        
+        return bullet
         
     }
     
@@ -222,9 +305,19 @@ class GameScene: SKScene {
 
         /* Called before each frame is rendered */
         
+        if self.isGameOver() {
+            self.endGame()
+        }
+        
+        processContactsForUpdate(currentTime)
+        
+        processUserTapsForUpdate(currentTime)
+        
         processUserMotionForUpdate(currentTime)
         
         moveInvadersForUpdate(currentTime)
+        
+        fireInvaderBulletsForUpdate(currentTime)
         
     }
     
@@ -263,28 +356,102 @@ class GameScene: SKScene {
     func processUserMotionForUpdate(currentTime: CFTimeInterval) {
         
         // Get the ship from the scene so you can move it.
-        let ship = childNodeWithName(kShipName) as! SKSpriteNode
-        
-        // Get the accelerometer data from the motion manager. 
-        // It is an Optional, that is a variable that can hold either a value or no value. 
-        // The if let data statement allows to check if there is a value in accelerometerData, 
-        // if is the case assign it to the constant data in order to use it safely within the if’s scope.
-        if let data = motionManager.accelerometerData {
+        if let ship = self.childNodeWithName(kShipName) as! SKSpriteNode! {
             
-            // If your device is oriented with the screen facing up and the home button at the bottom, 
-            // then tilting the device to the right produces data.acceleration.x > 0, 
-            // whereas tilting it to the left produces data.acceleration.x < 0. 
-            // The check against 0.2 means that the device will be considered perfectly flat/no 
-            // thrust (technically data.acceleration.x == 0) as long as it's close enough to zero 
-            // (data.acceleration.x in the range [-0.2, 0.2]). 
-            // There's nothing special about 0.2, it just seemed to work well for me. 
-            // Little tricks like this will make your control system more reliable and less frustrating for users.
-            if (fabs(data.acceleration.x) > 0.2) {
+            // Get the accelerometer data from the motion manager.
+            // It is an Optional, that is a variable that can hold either a value or no value.
+            // The if let data statement allows to check if there is a value in accelerometerData,
+            // if is the case assign it to the constant data in order to use it safely within the if’s scope.
+            if let data = motionManager.accelerometerData {
                 
-                ship.physicsBody!.applyForce(CGVectorMake(40.0 * CGFloat(data.acceleration.x), 0))
-                
+                // If your device is oriented with the screen facing up and the home button at the bottom,
+                // then tilting the device to the right produces data.acceleration.x > 0,
+                // whereas tilting it to the left produces data.acceleration.x < 0.
+                // The check against 0.2 means that the device will be considered perfectly flat/no
+                // thrust (technically data.acceleration.x == 0) as long as it's close enough to zero
+                // (data.acceleration.x in the range [-0.2, 0.2]).
+                // There's nothing special about 0.2, it just seemed to work well for me.
+                // Little tricks like this will make your control system more reliable and less frustrating for users.
+                if (fabs(data.acceleration.x) > 0.2) {
+                    
+                    ship.physicsBody!.applyForce(CGVectorMake(40.0 * CGFloat(data.acceleration.x), 0))
+                    
+                }
+
             }
+
         }
+
+    }
+    
+    func processUserTapsForUpdate(currentTime: CFTimeInterval) {
+        
+        // Loop over tapQueue.
+        for tapCount in self.tapQueue {
+            
+            if tapCount == 1 {
+                // If the queue entry is a single-tap, handle it.
+                self.fireShipBullets()
+            }
+            
+            // Remove the tap from the queue.
+            self.tapQueue.removeAtIndex(0)
+            
+        }
+        
+    }
+    
+    func fireInvaderBulletsForUpdate(currentTime: CFTimeInterval) {
+        
+        let existingBullet = self.childNodeWithName(kInvaderFiredBulletName)
+        
+        // Only fire a bullet if one’s not already on-screen.
+        if existingBullet == nil {
+            
+            var allInvaders = Array<SKNode>()
+            
+            // Collect all the invaders currently on-screen.
+            self.enumerateChildNodesWithName(kInvaderName) {
+                node, stop in
+                
+                allInvaders.append(node)
+            }
+            
+            if allInvaders.count > 0 {
+                
+                // Select an invader at random.
+                let allInvadersIndex = Int( arc4random_uniform( UInt32( allInvaders.count ) ) )
+                
+                let invader = allInvaders[allInvadersIndex]
+                
+                // Create a bullet and fire it from just below the selected invader.
+                let bullet = self.makeBulletOfType(.InvaderFired)
+                bullet.position = CGPoint(x: invader.position.x, y: invader.position.y - invader.frame.size.height / 2 + bullet.frame.size.height / 2)
+                
+                // The bullet should travel straight down and move just off the bottom of the screen.
+                let bulletDestination = CGPoint(x: invader.position.x, y: -(bullet.frame.size.height / 2))
+                
+                // Fire off the invader’s bullet.
+                self.fireBullet(bullet, toDestination: bulletDestination, withDuration: 2.0, andSoundFileName: "InvaderBullet.wav")
+        
+            }
+        
+        }
+        
+    }
+    
+    func processContactsForUpdate(currentTime: CFTimeInterval) {
+        
+        for contact in self.contactQueue {
+        
+            self.handleContact(contact)
+            
+            if let index = (self.contactQueue as NSArray).indexOfObject(contact) as Int? {
+                self.contactQueue.removeAtIndex(index)
+            }
+            
+        }
+        
     }
     
     // Invader Movement Helpers
@@ -306,6 +473,7 @@ class GameScene: SKScene {
                 // and is scaled to fill its parent view, this comparison ensures you’re testing against the view’s edges.
                 if (CGRectGetMaxX(node.frame) >= node.scene!.size.width - 1.0) {
                     proposedMovementDirection = .DownThenLeft
+                    self.adjustInvaderMovementToTimePerMove(self.timePerMove * 0.8)
                     stop.memory = true
                 }
             case .Left:
@@ -313,6 +481,7 @@ class GameScene: SKScene {
                 // Set proposedMovementDirection so that invaders move down then right.
                 if (CGRectGetMinX(node.frame) <= 1.0) {
                     proposedMovementDirection = .DownThenRight
+                    self.adjustInvaderMovementToTimePerMove(self.timePerMove * 0.8)
                     stop.memory = true
                 }
             case .DownThenLeft:
@@ -338,7 +507,74 @@ class GameScene: SKScene {
         
     }
     
+    func adjustInvaderMovementToTimePerMove(newTimerPerMove: CFTimeInterval) {
+        
+        // Ignore bogus values — a value less than or equal to zero would mean infinitely fast or reverse movement, 
+        // which doesn’t make sense.
+        if newTimerPerMove <= 0 {
+            return
+        }
+        
+        // Set the scene’s timePerMove to the given value. 
+        // This will speed up the movement of invaders within moveInvadersForUpdate. 
+        // Record the ratio of the change so you can adjust the node’s speed accordingly.
+        let ratio: CGFloat = CGFloat(self.timePerMove / newTimerPerMove)
+        self.timePerMove = newTimerPerMove
+        
+        self.enumerateChildNodesWithName(kInvaderName) {
+            node, stop in
+            
+            // Speed up the animation of invaders so that the animation cycles through its two frames more quickly. 
+            // The ratio ensures that if the new time per move is 1/3 the old time per move, 
+            // the new animation speed is 3 times the old animation speed. 
+            // Setting the node’s speed ensures that all of the node’s actions run more quickly, 
+            // including the action that animates between sprite frames.
+            node.speed = node.speed * ratio
+            
+        }
+        
+    }
+    
     // Bullet Helpers
+    func fireBullet(bullet: SKNode, toDestination destination:CGPoint, withDuration duration:CFTimeInterval, andSoundFileName soundName: String) {
+        
+        // Create an SKAction that moves the bullet to the desired destination and then removes it from the scene.
+        let bulletAction = SKAction.sequence([SKAction.moveTo(destination, duration: duration), SKAction.waitForDuration(3.0/60.0), SKAction.removeFromParent()])
+        
+        // Play the desired sound to signal that the bullet was fired.
+        let soundAction = SKAction.playSoundFileNamed(soundName, waitForCompletion: true)
+        
+        // Move the bullet and play the sound at the same time by putting them in the same group. A group runs its actions in parallel, not sequentially.
+        bullet.runAction(SKAction.group([bulletAction, soundAction]))
+        
+        // Fire the bullet by adding it to the scene.
+        self.addChild(bullet)
+    }
+    
+    func fireShipBullets() {
+        
+        let existingBullet = self.childNodeWithName(kShipFiredBulletName)
+        
+        // Only fire a bullet if there isn’t one currently on-screen.
+        if existingBullet == nil {
+            
+            if let ship = self.childNodeWithName(kShipName) {
+                
+                if let bullet = self.makeBulletOfType(.ShipFired) {
+                    
+                    // Set the bullet’s position so that it comes out of the top of the ship.
+                    bullet.position = CGPoint(x: ship.position.x, y: ship.position.y + ship.frame.size.height - bullet.frame.size.height / 2)
+                    
+                    // Set the bullet’s destination to be just off the top of the screen.
+                    let bulletDestination = CGPoint(x: ship.position.x, y: self.frame.size.height + bullet.frame.size.height / 2)
+                    
+                    // Fire the bullet!
+                    self.fireBullet(bullet, toDestination: bulletDestination, withDuration: 1.0, andSoundFileName: "ShipBullet.wav")
+                    
+                }
+            }
+        }
+    }
     
     // User Tap Helpers
     override func touchesBegan(touches: Set<UITouch>, withEvent event: UIEvent?) {
@@ -355,7 +591,7 @@ class GameScene: SKScene {
     
     override func touchesEnded(touches: Set<UITouch>, withEvent event: UIEvent?)  {
         
-        if let touch = touches.first as? UITouch {
+        if let touch = touches.first as UITouch? {
             
             if (touch.tapCount == 1) {
                 
@@ -365,9 +601,148 @@ class GameScene: SKScene {
     }
     
     // HUD Helpers
+    func adjustScoreBy(points: Int) {
+        
+        self.score += points
+        
+        let score = self.childNodeWithName(kScoreHudName) as! SKLabelNode
+        
+        score.text = String(format: "Score: %04u", self.score)
+    }
+    
+    func adjustShipHealthBy(healthAdjustment: Float) {
+        
+        // ensures that the ship’s health doesn’t go negative.
+        self.shipHealth = max(self.shipHealth + healthAdjustment, 0)
+        
+        let health = self.childNodeWithName(kHealthHudName) as! SKLabelNode
+        
+        health.text = String(format: "Health: %.1f%%", self.shipHealth * 100)
+        
+    }
     
     // Physics Contact Helpers
+    func didBeginContact(contact: SKPhysicsContact!) {
+        if contact as SKPhysicsContact? != nil {
+            self.contactQueue.append(contact)
+        }
+    }
+    
+    func handleContact(contact: SKPhysicsContact) {
+        
+        // Don't allow the same contact twice.
+        // Ensure you haven't already handled this contact and removed its nodes
+        if (contact.bodyA.node?.parent == nil || contact.bodyB.node?.parent == nil) {
+            return
+        }
+        
+        let nodeNames = [contact.bodyA.node!.name!, contact.bodyB.node!.name!]
+        
+        // containsObject is not yet implemented in Swift's Array and 
+        // you should cast the Array to NSArray like so (instanceOfSwiftArray as NSArray)
+        // in order to get access to NSArray's methods.
+        if (nodeNames as NSArray).containsObject(kShipName) && (nodeNames as NSArray).containsObject(kInvaderFiredBulletName) {
+            
+            // If an invader bullet hits your ship, remove your ship and the bullet from the scene and play a sound.
+            // Invader bullet hit a ship
+            self.runAction(SKAction.playSoundFileNamed("ShipHit.wav", waitForCompletion: false))
+            
+            // Adjust the ship’s health when it gets hit by an invader’s bullet.
+            self.adjustShipHealthBy(-0.334)
+            
+            if self.shipHealth <= 0.0 {
+                
+                // If the ship’s health is zero, remove the ship and the invader’s bullet from the scene.
+                contact.bodyA.node!.removeFromParent()
+                contact.bodyB.node!.removeFromParent()
+                
+            } else {
+                
+                // If the ship’s health is greater than zero, 
+                // only remove the invader’s bullet from the scene. 
+                // Dim the ship’s sprite slightly to indicate damage.
+                let ship = self.childNodeWithName(kShipName)!
+                
+                ship.alpha = CGFloat(self.shipHealth)
+                
+                if contact.bodyA.node == ship {
+                    
+                    contact.bodyB.node!.removeFromParent()
+                    
+                } else {
+                    
+                    contact.bodyA.node!.removeFromParent()
+                }
+                
+            }
+            
+        } else if ((nodeNames as NSArray).containsObject(kInvaderName) && (nodeNames as NSArray).containsObject(kShipFiredBulletName)) {
+            
+            // If a ship bullet hits an invader, 
+            // remove the invader and the bullet from the scene and play a different sound.
+            // Ship bullet hit an invader
+            self.runAction(SKAction.playSoundFileNamed("InvaderHit.wav", waitForCompletion: false))
+            contact.bodyA.node!.removeFromParent()
+            contact.bodyB.node!.removeFromParent()
+            
+            // When an invader is hit, add 100 points to the score.
+            self.adjustScoreBy(100)
+            
+        }
+    }
     
     // Game End Helpers
+    func isGameOver() -> Bool {
+        
+        // Get all invaders that remain in the scene.
+        let invader = self.childNodeWithName(kInvaderName)
+        
+        // Iterate through the invaders to check if any invaders are too low.
+        var invaderTooLow = false
+        
+        self.enumerateChildNodesWithName(kInvaderName) {
+            node, stop in
+            
+            if (Float(CGRectGetMinY(node.frame)) <= self.kMinInvaderBottomHeight)   {
+                
+                invaderTooLow = true
+                stop.memory = true
+            }
+        }
+        
+        // Get a pointer to your ship: if the ship’s health drops to zero, 
+        // then the player is considered dead and the player ship will be removed from the scene. 
+        // In this case, you’d get a nil value indicating that there is no player ship.
+        let ship = self.childNodeWithName(kShipName)
+        
+        // Return whether your game is over or not. 
+        // If there are no more invaders, or an invader is too low, 
+        // or your ship is destroyed, then the game is over.
+        return invader == nil || invaderTooLow || ship == nil
+        
+    }
+    
+    func endGame() {
+        
+        // End your game only once. 
+        // Otherwise, you’ll try to display the game over scene multiple times and this would be a definite bug.
+        if !self.gameEnding {
+            
+            self.gameEnding = true
+            
+            // Stop accelerometer updates.
+            self.motionManager.stopAccelerometerUpdates()
+            
+            // Show the GameOverScene. 
+            // You can inspect GameOverScene.swift for the details, 
+            // but it’s a basic scene with a simple “Game Over” message. 
+            // The scene will start another game if you tap on it.
+            let gameOverScene: GameOverScene = GameOverScene(size: self.size)
+            
+            view!.presentScene(gameOverScene, transition: SKTransition.doorsOpenHorizontalWithDuration(1.0))
+            
+        }
+        
+    }
     
 }
